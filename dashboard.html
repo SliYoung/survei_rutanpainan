@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Survei | Rutan Kelas IIB Painan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://i.imgur.com/GifnqrQ.png">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Charts -->
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-600 via-blue-600 to-sky-500 min-h-screen">
+
+<script>
+  if(localStorage.getItem('adminLogin') !== 'true'){
+    location.href = 'admin.html';
+  }
+</script>
+
+<!-- HEADER -->
+<header class="bg-white/90 backdrop-blur-md shadow-md px-4 py-3 flex items-center justify-between">
+  <div class="flex items-center gap-3">
+    <img src="https://i.imgur.com/GifnqrQ.png"
+         class="w-12 h-12 rounded-full bg-white p-1 shadow">
+    <div>
+      <h1 class="font-bold text-slate-800 leading-tight">
+        Dashboard Survei Layanan Kunjungan
+      </h1>
+      <p class="text-xs text-slate-500">
+        Rumah Tahanan Negara Kelas IIB Painan
+      </p>
+    </div>
+  </div>
+
+  <button onclick="logout()"
+    class="text-sm font-medium text-red-500 hover:text-red-600 transition">
+    Logout
+  </button>
+</header>
+
+<!-- MAIN -->
+<main class="p-4 space-y-6 max-w-4xl mx-auto">
+
+  <!-- KARTU RINGKAS -->
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-white rounded-2xl shadow-lg p-5 text-center">
+      <p class="text-xs text-slate-500">Jumlah Responden</p>
+      <h2 id="responden" class="text-4xl font-bold text-indigo-600 mt-1">0</h2>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-5 text-center">
+      <p class="text-xs text-slate-500">Nilai Kepuasan (Rata-rata)</p>
+      <h2 id="ikm" class="text-4xl font-bold text-green-600 mt-1">0</h2>
+    </div>
+  </div>
+
+  <!-- GRAFIK -->
+  <div class="bg-white rounded-2xl shadow-lg p-5">
+    <h3 class="font-semibold text-slate-700 mb-3">
+      Grafik Kepuasan Responden
+    </h3>
+    <div id="chart" class="w-full" style="height:320px"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="text-center text-xs text-white/80 pt-2">
+    © 2025 Rumah Tahanan Negara Kelas IIB Painan
+  </div>
+
+</main>
+
+<!-- SCRIPT -->
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbz_tEJ_xzABnxZN-ZcottF9LQ_PXnBkV3plE2MpKG1ABCAP1E_zqtcX26QHhS4tH1gF_Q/exec';
+
+google.charts.load('current', {packages:['corechart']});
+google.charts.setOnLoadCallback(loadData);
+
+function loadData(){
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('responden').innerText = data.responden;
+      document.getElementById('ikm').innerText =
+        (data.rata.reduce((a,b)=>+a + +b,0)/5).toFixed(2);
+
+      drawChart(data.rata);
+    });
+}
+
+function drawChart(rata){
+  const chartData = google.visualization.arrayToDataTable([
+    ['Pertanyaan','Nilai'],
+    ['Kualitas Layanan',Number(rata[0])],
+    ['Sikap Petugas',Number(rata[1])],
+    ['Kecepatan Pelayanan',Number(rata[2])],
+    ['Kenyamanan Ruang',Number(rata[3])],
+    ['Kepuasan Total',Number(rata[4])]
+  ]);
+
+  const chart = new google.visualization.ColumnChart(
+    document.getElementById('chart')
+  );
+
+  chart.draw(chartData,{
+    legend:'none',
+    vAxis:{minValue:0,maxValue:5},
+    colors:['#6366f1']
+  });
+}
+
+setInterval(loadData, 5000); // realtime tiap 5 detik
+
+function logout(){
+  localStorage.removeItem('adminLogin');
+  location.href = 'admin.html';
+}
+</script>
+
+</body>
+</html>

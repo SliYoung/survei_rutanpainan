@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Survei Layanan Kunjungan</title>
+  <link rel="icon" type="image/png" href="https://i.imgur.com/GifnqrQ.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body class="bg-gradient-to-br from-indigo-600 via-blue-600 to-sky-500 min-h-screen flex flex-col text-white">
+
+<!-- Header -->
+<header class="px-4 py-3 flex items-center justify-between bg-white/10 backdrop-blur-md">
+  <div class="flex items-center gap-3">
+    <img src="https://i.imgur.com/GifnqrQ.png" class="w-10 h-10 rounded-full bg-white p-1" />
+    <div class="leading-tight">
+      <h1 class="text-sm font-bold">Survei Layanan Kunjungan</h1>
+      <p class="text-xs opacity-80">Rutan Kelas IIB Painan</p>
+    </div>
+  </div>
+  <div id="clock" class="text-[11px] leading-tight text-right"></div>
+</header>
+
+<!-- Page Biodata -->
+<main id="pageBiodata" class="flex-1 flex items-center justify-center px-4">
+  <div class="w-full max-w-sm bg-white text-slate-800 rounded-3xl shadow-2xl p-6 space-y-4">
+
+    <!-- LOGO -->
+    <div class="flex justify-center">
+      <img src="https://i.imgur.com/GifnqrQ.png"
+           alt="Logo Rutan"
+           class="w-20 h-20 rounded-full bg-white p-2 shadow-md" />
+    </div>
+
+    <h2 class="text-lg font-bold text-center">Biodata Responden</h2>
+
+    <input id="nama" type="text" placeholder="Nama Lengkap"
+      class="w-full p-3 border rounded-xl focus:ring focus:ring-indigo-300" />
+
+    <input id="wa" type="tel" placeholder="No WhatsApp"
+      class="w-full p-3 border rounded-xl focus:ring focus:ring-indigo-300" />
+
+    <button id="startBtn"
+      class="w-full py-3 rounded-xl font-semibold text-white
+             bg-gradient-to-r from-indigo-600 to-blue-600
+             active:scale-95 transition">
+      Mulai Survei
+    </button>
+
+  </div>
+</main>
+
+
+<!-- Page Survey -->
+<main id="pageSurvey" class="hidden flex-1 flex items-center justify-center px-4">
+  <div class="w-full max-w-sm bg-white text-slate-800 rounded-3xl shadow-2xl p-6 space-y-5">
+
+    <!-- LOGO -->
+    <div class="flex justify-center">
+      <img src="https://i.imgur.com/GifnqrQ.png"
+           alt="Logo Rutan"
+           class="w-16 h-16 rounded-full bg-white p-2 shadow-md" />
+    </div>
+
+    <div class="text-center">
+      <p class="text-xs text-slate-500">Pertanyaan</p>
+      <h2 class="text-3xl font-bold" id="qNumber">1</h2>
+    </div>
+
+    <p class="text-center text-sm font-medium leading-relaxed" id="qText"></p>
+
+    <div class="grid grid-cols-5 gap-2 text-center">
+      <button onclick="answer(5)" class="survey-btn bg-green-100">
+        <i class="fa-solid fa-face-grin-stars text-green-600"></i>
+        <p>Sangat Puas</p>
+      </button>
+      <button onclick="answer(4)" class="survey-btn bg-emerald-100">
+        <i class="fa-solid fa-face-smile text-emerald-600"></i>
+        <p>Puas</p>
+      </button>
+      <button onclick="answer(3)" class="survey-btn bg-yellow-100">
+        <i class="fa-solid fa-face-meh text-yellow-500"></i>
+        <p>Cukup</p>
+      </button>
+      <button onclick="answer(2)" class="survey-btn bg-orange-100">
+        <i class="fa-solid fa-face-frown text-orange-500"></i>
+        <p>Tidak Puas</p>
+      </button>
+      <button onclick="answer(1)" class="survey-btn bg-red-100">
+        <i class="fa-solid fa-face-angry text-red-600"></i>
+        <p>Sangat Tidak Puas</p>
+      </button>
+    </div>
+
+    <div class="text-center text-xs text-slate-500" id="progress">1 / 5</div>
+  </div>
+</main>
+
+
+<!-- Page Thank You -->
+<main id="pageThanks" class="hidden flex-1 flex items-center justify-center px-4">
+  <div class="w-full max-w-sm bg-white text-slate-800 rounded-3xl shadow-2xl p-6 text-center space-y-4">
+    <i class="fa-solid fa-circle-check text-5xl text-green-600"></i>
+    <h2 class="text-xl font-bold">Terima Kasih 🙏</h2>
+    <p class="text-sm text-slate-600">Pendapat Anda sangat berarti bagi peningkatan layanan kami.</p>
+    <p class="text-xs text-slate-400">Survei akan kembali otomatis</p>
+  </div>
+</main>
+
+<!-- STYLE KHUSUS MOBILE (TIDAK MENGUBAH DESAIN) -->
+<style>
+  .survey-btn{
+    padding: 14px 6px;
+    border-radius: 18px;
+    font-size: 11px;
+    transition: all .25s ease;
+    transform: translateY(0);
+  }
+
+  /* ICON */
+  .survey-btn i{
+    font-size: 28px;        /* ICON LEBIH BESAR */
+    margin-bottom: 6px;
+    transition: transform .25s ease, filter .25s ease;
+  }
+
+  /* HOVER / TAP */
+  .survey-btn:hover{
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,.15);
+  }
+
+  .survey-btn:hover i{
+    transform: scale(1.15) rotate(-2deg);
+    filter: drop-shadow(0 6px 8px rgba(0,0,0,.25));
+  }
+
+  /* ANIMASI KLIK (HP FRIENDLY) */
+  .survey-btn:active{
+    transform: scale(.95);
+  }
+</style>
+
+
+  <!-- Script -->
+  <script>
+    // ====== KONFIGURASI GOOGLE SHEETS ======
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_tEJ_xzABnxZN-ZcottF9LQ_PXnBkV3plE2MpKG1ABCAP1E_zqtcX26QHhS4tH1gF_Q/exec';
+
+    const questions = [
+      'Bagaimana kualitas layanan kunjungan?',
+      'Bagaimana sikap petugas dalam pelayanan?',
+      'Bagaimana kecepatan pelayanan?',
+      'Bagaimana kenyamanan ruang kunjungan?',
+      'Bagaimana kepuasan Anda secara keseluruhan?'
+    ];
+
+    let index = 0;
+    let answers = [];
+    let biodata = {};
+
+    const pageBiodata = document.getElementById('pageBiodata');
+    const pageSurvey  = document.getElementById('pageSurvey');
+    const pageThanks  = document.getElementById('pageThanks');
+    const qText       = document.getElementById('qText');
+    const qNumber     = document.getElementById('qNumber');
+    const progress    = document.getElementById('progress');
+
+    qText.innerText = questions[0];
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').innerHTML = now.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + '<br>' + now.toLocaleTimeString('id-ID');
+    }
+    setInterval(updateClock,1000); updateClock();
+
+    function enableFullscreen(){
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen();
+    }
+
+    function goSurvey(){
+      const nama = document.getElementById('nama').value;
+      const wa   = document.getElementById('wa').value;
+      if(!nama || !wa) {
+        alert('Lengkapi biodata terlebih dahulu');
+        return;
+      }
+      biodata = { nama, wa };
+      enableFullscreen();
+      pageBiodata.classList.add('hidden');
+      pageSurvey.classList.remove('hidden');
+    }
+
+    document.getElementById('startBtn').addEventListener('click', goSurvey);
+
+    function showThankYou(){
+      fetch(SCRIPT_URL,{
+        method:'POST',
+        body: JSON.stringify({
+          nama: biodata.nama,
+          wa: biodata.wa,
+          jawaban: answers,
+          waktu: new Date().toISOString()
+        })
+      }).catch(()=>{});
+
+      pageSurvey.classList.add('hidden');
+      pageThanks.classList.remove('hidden');
+      setTimeout(()=>location.reload(),4000);
+    }
+
+    function answer(val){
+      answers[index] = val;
+      index++;
+      if(index < questions.length){
+        qNumber.innerText = index + 1;
+        qText.innerText = questions[index];
+        progress.innerText = (index+1) + ' / ' + questions.length;
+      } else {
+        showThankYou();
+      }
+    }
+  </script>
+</body>
+</html>
