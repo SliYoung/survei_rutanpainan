@@ -67,6 +67,28 @@
     </h3>
     <div id="chart" class="w-full" style="height:320px"></div>
   </div>
+  <!-- TABEL DATA -->
+<div class="bg-white rounded-2xl shadow-lg p-5">
+  <h3 class="font-semibold text-slate-700 mb-3">
+    Data Responden Terbaru
+  </h3>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm border rounded-lg overflow-hidden">
+      <thead class="bg-indigo-600 text-white">
+        <tr>
+          <th class="px-3 py-2 text-left">Tanggal</th>
+          <th class="px-3 py-2 text-left">Nama</th>
+          <th class="px-3 py-2 text-left">WhatsApp</th>
+          <th class="px-3 py-2 text-center">Nilai</th>
+          <th class="px-3 py-2 text-center">Status</th>
+        </tr>
+      </thead>
+      <tbody id="tableData" class="divide-y"></tbody>
+    </table>
+  </div>
+</div>
+
 
   <!-- FOOTER -->
   <div class="text-center text-xs text-white/80 pt-2">
@@ -77,7 +99,7 @@
 
 <!-- SCRIPT -->
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbz_tEJ_xzABnxZN-ZcottF9LQ_PXnBkV3plE2MpKG1ABCAP1E_zqtcX26QHhS4tH1gF_Q/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxDBD7R_d2oATlC8wIR4kLGpdN-hkm6JqP8lwtzBwnHOwhzFzLX32aDdb_X9iwvP5SvQw/exec';
 
 google.charts.load('current', {packages:['corechart']});
 google.charts.setOnLoadCallback(loadData);
@@ -86,11 +108,17 @@ function loadData(){
   fetch(API_URL)
     .then(res => res.json())
     .then(data => {
+
+      // KARTU
       document.getElementById('responden').innerText = data.responden;
       document.getElementById('ikm').innerText =
         (data.rata.reduce((a,b)=>+a + +b,0)/5).toFixed(2);
 
+      // GRAFIK
       drawChart(data.rata);
+
+      // TABEL
+      renderTable(data.rows);
     });
 }
 
@@ -121,6 +149,30 @@ function logout(){
   localStorage.removeItem('adminLogin');
   location.href = 'admin.html';
 }
+
+function renderTable(rows){
+  const tbody = document.getElementById('tableData');
+  tbody.innerHTML = '';
+
+  rows.slice(-10).reverse().forEach(r => {
+    const nilai = Number(r.total);
+    const status = nilai >= 3
+      ? `<span class="text-green-600 font-semibold">Puas</span>`
+      : `<span class="text-red-600 font-semibold">Tidak Puas</span>`;
+
+    tbody.innerHTML += `
+      <tr class="hover:bg-slate-50">
+        <td class="px-3 py-2">${r.tanggal}</td>
+        <td class="px-3 py-2">${r.nama}</td>
+        <td class="px-3 py-2">${r.wa}</td>
+        <td class="px-3 py-2 text-center font-bold">${nilai}</td>
+        <td class="px-3 py-2 text-center">${status}</td>
+      </tr>
+    `;
+  });
+}
+</script>
+
 </script>
 
 </body>
